@@ -1,0 +1,31 @@
+.auth-container {
+display: flex;
+flex-direction: column;
+gap: 10px;
+}
+.auth-form {
+display: flex;
+flex-direction: column;
+gap: 8px;
+}
+.auth-form input {
+padding: 6px;
+border: 1px solid #ccc;
+border-radius: 4px;
+}
+.auth-form button {
+padding: 8px;
+border: none;
+border-radius: 4px;
+background: #4CAF50;
+color: white;
+cursor: pointer;
+}
+.auth-toggle {
+font-size: 14px;
+}
+.auth-toggle span {
+color: blue;
+cursor: pointer;
+margin-left: 4px;
+}

@@ -1,0 +1,41 @@
+.header {
+justify-content: space-between;
+align-items: center;
+padding: 10px 20px;
+background: #f0f0f0;
+border-bottom: 1px solid #ccc;
+}
+.header-left {
+font-weight: bold;
+font-size: 20px;
+}
+.header-right {
+display: flex;
+align-items: center;
+gap: 10px;
+position: relative;
+}
+.login-btn {
+padding: 6px 12px;
+cursor: pointer;
+}
+.lang-switcher {
+position: relative;
+cursor: pointer;
+}
+.lang-options {
+position: absolute;
+top: 20px;
+right: 0;
+background: white;
+border: 1px solid #ccc;
+border-radius: 4px;
+overflow: hidden;
+}
+.lang-options div {
+padding: 5px 10px;
+cursor: pointer;
+}
+.lang-options div:hover {
+background: #eee;
+}
