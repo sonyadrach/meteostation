@@ -11,7 +11,7 @@ export default function WeatherWidget({ language }) {
 
   useEffect(() => {
     fetchWeather();
-    // eslint-disable-next-line
+   
   }, []);
 
   const fetchWeather = async () => {
