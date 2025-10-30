@@ -1,25 +1,35 @@
 .weather-widget {
-  background: #ffffff;
-  padding: 15px;
-  margin: 20px;
+  background: white;
   border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-  width: 300px;
-  font-family: Arial, sans-serif;
+  padding: 16px;
+  max-width: 300px;
+  margin: 20px auto;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  text-align: center;
 }
 
-.weather-widget h3 {
-  margin-top: 0;
+.weather-search {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 10px;
 }
 
-.weather-widget p {
-  margin: 5px 0;
-}
-
-.city-input input {
-  width: 100%;
+.weather-search input {
   padding: 6px;
-  margin-top: 10px;
-  border-radius: 4px;
   border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.weather-search button {
+  background: #4CAF50;
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.error {
+  color: red;
 }

@@ -1,44 +1,65 @@
 import React, { useState, useEffect } from "react";
-import { translations } from "../../i18n/translations";
 import "./weather.css";
 
 export default function WeatherWidget({ language }) {
   const [weather, setWeather] = useState(null);
   const [city, setCity] = useState("Kyiv");
-  const t = translations[language];
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  // Тут поки що фейкові дані, пізніше підключимо API
+  const apiKey = process.env.REACT_APP_WEATHER_API_KEY;
+
   useEffect(() => {
-    const fetchWeather = async () => {
-      // TODO: замінити на API виклик
-      setWeather({
-        temperature: 18,
-        pressure: 1012,
-        humidity: 55,
-        windSpeed: 5,
-      });
-    };
     fetchWeather();
-  }, [city]);
+    // eslint-disable-next-line
+  }, []);
 
-  if (!weather) return <div className="weather-widget">Loading...</div>;
+  const fetchWeather = async () => {
+    try {
+      setLoading(true);
+      setError("");
+      const res = await fetch(
+        `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric&lang=${language}`
+      );
+      const data = await res.json();
+      if (data.cod === 200) setWeather(data);
+      else setError(language === "ua" ? "Місто не знайдено" : "City not found");
+    } catch (err) {
+      setError(language === "ua" ? "Помилка з'єднання" : "Connection error");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="weather-widget">
-      <h3>{t.city}: {city}</h3>
-      <p>{t.temperature}: {weather.temperature}°C</p>
-      <p>{t.pressure}: {weather.pressure} hPa</p>
-      <p>{t.humidity}: {weather.humidity}%</p>
-      <p>{t.wind}: {weather.windSpeed} m/s</p>
+      <h2>{language === "ua" ? "Погода" : "Weather"}</h2>
 
-      <div className="city-input">
+      <div className="weather-search">
         <input
           type="text"
           value={city}
           onChange={(e) => setCity(e.target.value)}
-          placeholder={t.city}
+          placeholder={language === "ua" ? "Введіть місто..." : "Enter city..."}
         />
+        <button onClick={fetchWeather}>
+          {language === "ua" ? "Оновити" : "Update"}
+        </button>
       </div>
+
+      {loading && <p>{language === "ua" ? "Завантаження..." : "Loading..."}</p>}
+      {error && <p className="error">{error}</p>}
+
+      {weather && (
+        <div className="weather-info">
+          <h3>{weather.name}</h3>
+          <p>
+            🌡 {Math.round(weather.main.temp)}°C | 💧 {weather.main.humidity}% | 🌬{" "}
+            {Math.round(weather.wind.speed)} m/s
+          </p>
+          <p>{weather.weather[0].description}</p>
+        </div>
+      )}
     </div>
   );
 }
