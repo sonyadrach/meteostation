@@ -1,6 +1,7 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 const { registerUser, loginUser } = require('./db.js'); 
+require('dotenv').config();
 
 function createWindow() {
   const win = new BrowserWindow({

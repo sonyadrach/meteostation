@@ -3,33 +3,44 @@ import "./weather.css";
 
 export default function WeatherWidget({ language }) {
   const [weather, setWeather] = useState(null);
-  const [city, setCity] = useState("Kyiv");
+  const [city, setCity] = useState("Київ");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const apiKey = process.env.REACT_APP_WEATHER_API_KEY;
-
-  useEffect(() => {
-    fetchWeather();
-   
-  }, []);
+  const apiKey = window.env?.apiKey;
 
   const fetchWeather = async () => {
     try {
       setLoading(true);
       setError("");
+
+      const encodedCity = encodeURIComponent(city.trim());
       const res = await fetch(
-        `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric&lang=${language}`
+        `https://api.openweathermap.org/data/2.5/weather?q=${encodedCity}&appid=${apiKey}&units=metric&lang=${language}`
       );
       const data = await res.json();
-      if (data.cod === 200) setWeather(data);
-      else setError(language === "ua" ? "Місто не знайдено" : "City not found");
+
+      if (data.cod === 200) {
+        // якщо українська то підміняє назву міста з data.sys.country
+        const displayName =
+          language === "ua" && city ? city.charAt(0).toUpperCase() + city.slice(1) : data.name;
+        setWeather({ ...data, name: displayName });
+      } else {
+        setError(language === "ua" ? "Місто не знайдено" : "City not found");
+        setWeather(null);
+      }
     } catch (err) {
       setError(language === "ua" ? "Помилка з'єднання" : "Connection error");
+      setWeather(null);
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchWeather();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [language]);
 
   return (
     <div className="weather-widget">
@@ -54,10 +65,17 @@ export default function WeatherWidget({ language }) {
         <div className="weather-info">
           <h3>{weather.name}</h3>
           <p>
-            🌡 {Math.round(weather.main.temp)}°C | 💧 {weather.main.humidity}% | 🌬{" "}
-            {Math.round(weather.wind.speed)} m/s
+            🌡 {language === "ua" ? "Температура" : "Temperature"}:{" "}
+            {Math.round(weather.main.temp)}°C
           </p>
-          <p>{weather.weather[0].description}</p>
+          <p>
+            💧 {language === "ua" ? "Вологість" : "Humidity"}: {weather.main.humidity}%
+          </p>
+          <p>
+            🌬 {language === "ua" ? "Вітер" : "Wind"}: {Math.round(weather.wind.speed)}{" "}
+            {language === "ua" ? "м/с" : "m/s"}
+          </p>
+          <p>☁️ {weather.weather[0].description}</p>
         </div>
       )}
     </div>
