@@ -1,83 +1,132 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState, useCallback } from "react";
+// НЕОБХІДНИЙ ІМПОРТ: Додайте цей рядок у ваш файл, якщо він відсутній:
+// import { translations } from "../i18n/translations";
 import "./weather.css";
 
-export default function WeatherWidget({ language }) {
+// Примітка: Для коректної роботи цього коду, об'єкт translations
+// має бути доступний (наприклад, через імпорт). Я імітую його тут для чистоти.
+const translations = { ua: { save: "Зберегти", cityNotFound: "Місто не знайдено", error: "Помилка API", temp: "Температура:", feelsLike: "Відчувається як:", humidity: "Вологість:", wind: "Вітер:", weatherIn: "Погода в", citySaved: "Місто збережено!", saveError: "Помилка збереження", enterCity: "Введіть місто...", }, en: { save: "Save", cityNotFound: "City not found", error: "API error", temp: "Temperature:", feelsLike: "Feels like:", humidity: "Humidity:", wind: "Wind speed", weatherIn: "Weather in", citySaved: "City saved!", saveError: "Save error", enterCity: "Enter city...", }, };
+
+export default function WeatherWidget({ language, user, onCitySave }) {
+  // Використовуємо властивість city з об'єкта user, переданого з HomePage
+  const initialCity = user?.city || ""; 
+  
+  // Стан для поля вводу всередині віджета
+  const [cityInput, setCityInput] = useState(initialCity); 
   const [weather, setWeather] = useState(null);
-  const [city, setCity] = useState("Київ");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [message, setMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  
+  // Використовуємо об'єкт t з імпорту
+  const t = translations[language]; 
+  const apiKey = window.env.apiKey;
 
-  const apiKey = window.env?.apiKey;
+  // Синхронізуємо inner state (cityInput) при зміні initialCity (з HomePage)
+  useEffect(() => {
+    setCityInput(initialCity);
+  }, [initialCity]);
 
-  const fetchWeather = async () => {
+  // ======================================================
+  // LOAD WEATHER (викликається, коли user.city змінюється)
+  // ======================================================
+  const loadWeather = useCallback(async (targetCity) => {
+    if (!targetCity) return;
+    setIsLoading(true); setMessage(""); setWeather(null);
+
     try {
-      setLoading(true);
-      setError("");
-
-      const encodedCity = encodeURIComponent(city.trim());
-      const res = await fetch(
-        `https://api.openweathermap.org/data/2.5/weather?q=${encodedCity}&appid=${apiKey}&units=metric&lang=${language}`
-      );
+      const url = `https://api.openweathermap.org/data/2.5/weather?q=${targetCity}&appid=${apiKey}&units=metric&lang=${language}`;
+      const res = await fetch(url);
       const data = await res.json();
-
+      
       if (data.cod === 200) {
-        // якщо українська то підміняє назву міста з data.sys.country
-        const displayName =
-          language === "ua" && city ? city.charAt(0).toUpperCase() + city.slice(1) : data.name;
-        setWeather({ ...data, name: displayName });
+        setWeather({ // Зберігаємо повний об'єкт даних
+          temp: data.main.temp,
+          feelsLike: data.main.feels_like,
+          humidity: data.main.humidity,
+          wind: data.wind.speed,
+          description: data.weather[0].description,
+          icon: data.weather[0].icon,
+        }); 
       } else {
-        setError(language === "ua" ? "Місто не знайдено" : "City not found");
-        setWeather(null);
+        setMessage(t.cityNotFound);
       }
     } catch (err) {
-      setError(language === "ua" ? "Помилка з'єднання" : "Connection error");
-      setWeather(null);
+      setMessage(t.error);
     } finally {
-      setLoading(false);
+      setIsLoading(false);
+    }
+  }, [apiKey, language, t.cityNotFound, t.error]); 
+
+  // Ефект для автоматичного завантаження погоди
+  useEffect(() => {
+    if (initialCity) loadWeather(initialCity);
+  }, [initialCity, language, loadWeather]);
+
+  // ======================================================
+  // SAVE CITY (Викликається з кнопки "Зберегти" у віджеті)
+  // ======================================================
+  const saveCity = async () => {
+    if (!cityInput.trim() || !user?.id) return;
+    setMessage("");
+
+    try {
+      const response = await window.api.updateUserCity({
+        userId: user.id,
+        city: cityInput.trim(),
+      });
+
+      if (response.success) {
+        // КЛЮЧ: Повідомляємо HomePage, що місто збережено
+        if (onCitySave) onCitySave(cityInput.trim()); 
+        setMessage(t.citySaved);
+      } else {
+        setMessage(t.saveError);
+      }
+    } catch (err) {
+      setMessage(t.saveError);
     }
   };
 
-  useEffect(() => {
-    fetchWeather();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [language]);
-
   return (
     <div className="weather-widget">
-      <h2>{language === "ua" ? "Погода" : "Weather"}</h2>
 
-      <div className="weather-search">
+      {/* ФОРМА ВВЕДЕННЯ */}
+      <div className="city-input-group">
         <input
           type="text"
-          value={city}
-          onChange={(e) => setCity(e.target.value)}
-          placeholder={language === "ua" ? "Введіть місто..." : "Enter city..."}
+          value={cityInput}
+          placeholder={t.enterCity}
+          onChange={(e) => setCityInput(e.target.value)}
+          className="city-input-field"
         />
-        <button onClick={fetchWeather}>
-          {language === "ua" ? "Оновити" : "Update"}
+        <button onClick={saveCity} className="city-save-btn">
+          {t.save}
         </button>
       </div>
 
-      {loading && <p>{language === "ua" ? "Завантаження..." : "Loading..."}</p>}
-      {error && <p className="error">{error}</p>}
+      {message && <p className="status-message">{message}</p>}
 
+      {/* ВІДОБРАЖЕННЯ ПОГОДИ */}
+      {isLoading && <p>Завантаження...</p>}
       {weather && (
         <div className="weather-info">
-          <h3>{weather.name}</h3>
-          <p>
-            🌡 {language === "ua" ? "Температура" : "Temperature"}:{" "}
-            {Math.round(weather.main.temp)}°C
-          </p>
-          <p>
-            💧 {language === "ua" ? "Вологість" : "Humidity"}: {weather.main.humidity}%
-          </p>
-          <p>
-            🌬 {language === "ua" ? "Вітер" : "Wind"}: {Math.round(weather.wind.speed)}{" "}
-            {language === "ua" ? "м/с" : "m/s"}
-          </p>
-          <p>☁️ {weather.weather[0].description}</p>
+          <h3>{t.weatherIn} {initialCity}</h3>
+          
+          <img
+            alt="icon"
+            src={`https://openweathermap.org/img/wn/${weather.icon}@2x.png`}
+            onError={(e) => { e.target.onerror = null; e.target.src = "https://placehold.co/50x50/cccccc/333333?text=N/A" }}
+          />
+          
+          <p>{t.temp} {weather.temp}°C</p>
+          <p>{t.feelsLike} {weather.feelsLike}°C</p>
+          <p>{t.humidity} {weather.humidity}%</p>
+          <p>{t.wind} {weather.wind} m/s</p>
+          <p style={{ textTransform: "capitalize" }}>{weather.description}</p>
         </div>
       )}
+      {!weather && !isLoading && initialCity && <p style={{ marginTop: "15px" }}>{t.cityNotFound}</p>}
+
     </div>
   );
 }

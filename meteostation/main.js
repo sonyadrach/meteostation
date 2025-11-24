@@ -1,11 +1,10 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
-const { registerUser, loginUser } = require('./db.js'); 
-require('dotenv').config();
+const { db, registerUser, loginUser, updateUserCity } = require('./db.js');
 
 function createWindow() {
   const win = new BrowserWindow({
-    width: 400,
+    width: 420,
     height: 700,
     autoHideMenuBar: true,
     webPreferences: {
@@ -13,19 +12,15 @@ function createWindow() {
     },
   });
 
-  win.loadFile(path.join(__dirname, 'build', 'index.html'));
+win.loadFile(path.join(__dirname, 'build', 'index.html'));
 }
 
 app.whenReady().then(createWindow);
-app.on('window-all-closed', (e) => {
-  e.preventDefault();
-});
-
+app.on('window-all-closed', () => app.quit());
 
 // === Реєстрація користувача ===
 ipcMain.handle('register-user', async (event, data) => {
   const { username, email, password } = data;
-
   return new Promise((resolve) => {
     registerUser(username, email, password, (err, id) => {
       if (err) {
@@ -40,16 +35,37 @@ ipcMain.handle('register-user', async (event, data) => {
 // === Вхід користувача ===
 ipcMain.handle('login-user', async (event, data) => {
   const { email, password } = data;
-
   return new Promise((resolve) => {
     loginUser(email, password, (err, user) => {
+      if (err) resolve({ success: false, message: err.message });
+      else if (user) resolve({ success: true, user });
+      else resolve({ success: false, message: 'Неправильний email або пароль' });
+    });
+  });
+});
+// === Отримання міста користувача ===
+ipcMain.handle('get-user-city', async (event, userId) => {
+  return new Promise((resolve) => {
+    db.get(`SELECT city FROM users WHERE id = ?`, [userId], (err, row) => {
       if (err) {
-        resolve({ success: false, message: 'Помилка при вході: ' + err.message });
-      } else if (user) {
-        resolve({ success: true, user });
+        resolve({ success: false, message: 'Помилка при отриманні міста: ' + err.message });
       } else {
-        resolve({ success: false, message: 'Неправильний email або пароль' });
+        resolve({ success: true, city: row ? row.city : '' });
       }
     });
   });
 });
+
+// === Оновлення міста ===
+ipcMain.handle('update-user-city', async (event, { userId, city }) => {
+  return new Promise((resolve) => {
+    updateUserCity(userId, city, (err) => {
+      if (err) {
+        resolve({ success: false, message: 'Помилка при оновленні міста: ' + err.message });
+      } else {
+        resolve({ success: true });
+      }
+    });
+  });
+});
+

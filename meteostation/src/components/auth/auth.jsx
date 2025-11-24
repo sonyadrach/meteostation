@@ -1,13 +1,18 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { translations } from "../../i18n/translations";
-import WeatherWidget from "../weather/weatherwidget"; 
 import "./auth.css";
 
 export default function Auth({ language }) {
+  const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState(true);
-  const [form, setForm] = useState({ username: "", email: "", password: "" });
+  const [form, setForm] = useState({
+    username: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
   const [message, setMessage] = useState("");
-  const [isAuthenticated, setIsAuthenticated] = useState(false); 
 
   const t = translations[language];
 
@@ -20,20 +25,34 @@ export default function Auth({ language }) {
 
     try {
       if (isLogin) {
-        // Вхід користувача
+        // === LOGIN ===
         const res = await window.api.loginUser({
           email: form.email,
           password: form.password,
         });
 
         if (res.success) {
-          setMessage("Вхід успішний!");
-          setIsAuthenticated(true);
+          localStorage.setItem("user", JSON.stringify(res.user));
+
+          // ПРАВИЛЬНЕ перенаправлення в Electron
+          navigate("/home");
+
         } else {
-          setMessage("Помилка: " + res.message);
+          setMessage(
+            (language === "ua" ? "Помилка: " : "Error: ") + res.message
+          );
         }
       } else {
-        // Реєстрація користувача
+        // === REGISTER ===
+        if (form.password !== form.confirmPassword) {
+          setMessage(
+            language === "ua"
+              ? "Паролі не співпадають!"
+              : "Passwords do not match!"
+          );
+          return;
+        }
+
         const res = await window.api.registerUser({
           username: form.username,
           email: form.email,
@@ -41,27 +60,40 @@ export default function Auth({ language }) {
         });
 
         if (res.success) {
-          setMessage("Реєстрація успішна!");
-          setIsAuthenticated(true); 
+          const newUser = {
+            id: res.id,
+            username: form.username,
+            email: form.email,
+            city: "",
+          };
+
+          localStorage.setItem("user", JSON.stringify(newUser));
+
+          // ПРАВИЛЬНЕ перенаправлення
+          navigate("/home");
+
         } else {
-          setMessage("Помилка: " + res.message);
+          setMessage(
+            (language === "ua" ? "Помилка: " : "Error: ") + res.message
+          );
         }
       }
     } catch (err) {
       console.error(err);
-      setMessage("Помилка з'єднання з базою даних.");
+      setMessage(
+        language === "ua"
+          ? "Помилка з'єднання з базою даних."
+          : "Database connection error."
+      );
     }
   };
-
-  if (isAuthenticated) {
-    return <WeatherWidget language={language} />;
-  }
 
   return (
     <div className="auth-container">
       <h2>{isLogin ? t.login : t.register}</h2>
 
       <form onSubmit={handleSubmit} className="auth-form">
+
         {!isLogin && (
           <>
             <label>{t.username}</label>
@@ -92,6 +124,21 @@ export default function Auth({ language }) {
           onChange={handleChange}
           required
         />
+
+        {!isLogin && (
+          <>
+            <label>
+              {language === "ua" ? "Підтвердіть пароль" : "Confirm password"}
+            </label>
+            <input
+              type="password"
+              name="confirmPassword"
+              value={form.confirmPassword}
+              onChange={handleChange}
+              required
+            />
+          </>
+        )}
 
         <button type="submit">
           {isLogin ? t.login : t.register}
