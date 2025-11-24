@@ -6,6 +6,7 @@ contextBridge.exposeInMainWorld('api', {
   loginUser: (data) => ipcRenderer.invoke('login-user', data),
   getUserCity: (userId) => ipcRenderer.invoke('get-user-city', userId),
   updateUserCity: (data) => ipcRenderer.invoke('update-user-city', data),
+  updateUserSettings: (data) => ipcRenderer.invoke('update-user-settings', data), 
 });
 
 contextBridge.exposeInMainWorld('env', { apiKey });

@@ -12,6 +12,7 @@ const db = new sqlite3.Database(dbPath, (err) => {
 });
 
 db.serialize(() => {
+  // 1. Таблиця користувачів
   db.run(`
     CREATE TABLE IF NOT EXISTS users (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -27,6 +28,22 @@ db.serialize(() => {
       console.log('✅ Таблиця users готова');
     }
   });
+
+  // 2. ДОДАНО: Таблиця для налаштувань користувача (тема, мова)
+  db.run(`
+    CREATE TABLE IF NOT EXISTS user_settings (
+      user_id INTEGER PRIMARY KEY,
+      theme TEXT DEFAULT 'default',
+      language TEXT DEFAULT 'ua',
+      FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
+    )
+  `, (err) => {
+    if (err) {
+      console.error('Помилка створення таблиці user_settings:', err.message);
+    } else {
+      console.log('✅ Таблиця user_settings готова');
+    }
+  });
 });
 
 // === Реєстрація користувача ===
@@ -37,22 +54,44 @@ function registerUser(username, email, password, callback) {
 
     const query = `INSERT INTO users (username, email, password, city) VALUES (?, ?, ?, '')`;
     db.run(query, [username, email, hash], function (err) {
-      callback(err, this?.lastID);
+      const newUserId = this?.lastID;
+
+      // КЛЮЧ: Додаємо запис у user_settings при реєстрації
+      if (newUserId) {
+        db.run(`INSERT INTO user_settings (user_id, theme, language) VALUES (?, 'default', 'ua')`, [newUserId], (dataErr) => {
+          if (dataErr) console.error('Помилка ініціалізації user_settings:', dataErr.message);
+          callback(err, newUserId);
+        });
+      } else {
+        callback(err, newUserId);
+      }
     });
   });
 }
 
 // === Вхід користувача ===
 function loginUser(email, password, callback) {
-  const query = `SELECT * FROM users WHERE email = ?`;
-  db.get(query, [email], (err, user) => {
+  const userQuery = `SELECT * FROM users WHERE email = ?`;
+  db.get(userQuery, [email], (err, user) => {
     if (err) return callback(err);
     if (!user) return callback(null, null);
 
     bcrypt.compare(password, user.password, (err, isMatch) => {
       if (err) return callback(err);
       if (!isMatch) return callback(null, null);
-      callback(null, user);
+
+      // Отримуємо додаткові налаштування користувача
+      db.get(`SELECT theme, language FROM user_settings WHERE user_id = ?`, [user.id], (settingsErr, settingsRow) => {
+        if (settingsErr) console.error('Помилка отримання user_settings:', settingsErr.message);
+
+        // Додаємо налаштування до об'єкта користувача, який повертаємо фронтенду
+        user.settings = {
+          theme: settingsRow ? settingsRow.theme : 'default',
+          language: settingsRow ? settingsRow.language : 'ua',
+        };
+
+        callback(null, user);
+      });
     });
   });
 }
@@ -65,9 +104,20 @@ function updateUserCity(userId, city, callback) {
   });
 }
 
+// === ДОДАНО: Оновлення налаштувань користувача (тема/мова) ===
+function updateUserSettings(userId, { theme, language }, callback) {
+  const query = `INSERT INTO user_settings (user_id, theme, language) VALUES (?, ?, ?) 
+                 ON CONFLICT(user_id) DO UPDATE SET theme=excluded.theme, language=excluded.language`;
+                 
+  db.run(query, [userId, theme, language], function (err) {
+    callback(err);
+  });
+}
+
 module.exports = {
   db,
   registerUser,
   loginUser,
   updateUserCity,
+  updateUserSettings, // Експортуємо нову функцію
 };

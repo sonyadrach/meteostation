@@ -1,6 +1,6 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
-const { db, registerUser, loginUser, updateUserCity } = require('./db.js');
+const { db, registerUser, loginUser, updateUserCity, updateUserSettings } = require('./db.js');
 
 function createWindow() {
   const win = new BrowserWindow({
@@ -69,3 +69,14 @@ ipcMain.handle('update-user-city', async (event, { userId, city }) => {
   });
 });
 
+ipcMain.handle('update-user-settings', async (event, { userId, theme, language }) => {
+  return new Promise((resolve) => {
+    updateUserSettings(userId, { theme, language }, (err) => {
+      if (err) {
+        resolve({ success: false, message: 'Помилка при оновленні налаштувань: ' + err.message });
+      } else {
+        resolve({ success: true });
+      }
+    });
+  });
+});

@@ -1,11 +1,48 @@
 
+body {
+    transition: background-color 0.3s, color 0.3s;
+}
+
+body.theme-default {
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+body.theme-dark {
+    background-color: #1a1a1a;
+    color: #f4f4f4;
+}
+
+body.theme-dark .homepage-container,
+body.theme-dark .settings-options {
+    background-color: #222;
+    color: #fff;
+    border-color: #555;
+}
+/* ДОДАТКОВА ТЕМА */
+body.theme-blue {
+    background-color: #1e3a8a;
+    color: #fff;
+}
+body.theme-blue .homepage-container,
+body.theme-blue .settings-options {
+    background-color: #1f3f90;
+    color: #fff;
+}
+/* ------------------------------------------- */
+
 .homepage-container {
     max-width: 800px;
     margin: 0 auto;
     padding: 20px;
     font-family: Arial, sans-serif;
+    transition: background-color 0.3s;
+    background-color: white; /* Фон контейнера, щоб контрастувати з body */
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
+/* 1. КОНТРОЛЬ ЗАГОЛОВКУ ТА КНОПОК */
 .header-controls {
     display: flex;
     justify-content: space-between; 
@@ -19,50 +56,99 @@
     margin: 0;
 }
 
-.lang-switcher {
+
+/* 2. СТИЛІ МЕНЮ НАЛАШТУВАНЬ (Іконка Акаунту) */
+.settings-menu {
     position: relative; 
     cursor: pointer;
     z-index: 10;
-    margin-left: auto; 
 }
 
-.globe {
-    font-size: 24px;
+.account-icon {
+    font-size: 30px; /* Збільшуємо іконку */
+    padding: 5px;
+    border-radius: 50%;
+    transition: background 0.2s;
+    user-select: none;
+    line-height: 1;
 }
 
-.lang-options {
+.account-icon:hover {
+    background: #f0f0f0;
+}
+
+.settings-options {
     position: absolute;
-    top: 30px; 
+    top: 40px; /* Трохи нижче іконки */
     right: 0;
+    width: 250px;
+    padding: 15px;
     background: white;
-    border: 1px solid #ccc;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    border-radius: 6px;
-    overflow: hidden;
-    min-width: 60px;
-    text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
 }
 
-.lang-options div {
-    padding: 8px 10px;
-    cursor: pointer;
+.menu-title {
+    font-weight: bold;
+    margin-bottom: 15px;
+    font-size: 16px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 8px;
+}
+
+/* 3. СТИЛІ СЕЛЕКТОРІВ (Мова та Тема) */
+.language-selector,
+.theme-selector {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
     font-size: 14px;
 }
 
-.city-heading {
-    font-size: 20px;
-    font-weight: bold;
-    margin-top: 15px;
-    margin-bottom: 10px;
+.lang-btn, .theme-btn {
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+    background: #fff;
+    color: #333;
+    transition: all 0.2s;
 }
 
-.logout-btn {
-    margin-top: 30px;
-    padding: 12px 25px;
-    background: rgb(50, 20, 220);
+.lang-btn.active, .theme-btn.active-theme {
+    border-color: #007bff;
+    background: #e6f7ff;
+    font-weight: bold;
+}
+
+/* 4. СТИЛІ СЕЛЕКТОРА ТЕМИ (Кольорові кнопки) */
+.theme-btn {
+    width: 25px;
+    height: 25px;
+    padding: 0;
+    border-radius: 50%;
+    border: 2px solid transparent;
+}
+
+.theme-btn.active-theme {
+    border-color: gold; /* Виділяємо активну тему */
+}
+
+.theme-default { background: #e0e0e0; }
+.theme-dark { background: #333333; }
+.theme-blue { background: #2a52be; }
+
+
+/* 5. КНОПКА ВИХОДУ В МЕНЮ */
+.logout-btn-menu {
+    width: 100%;
+    padding: 10px;
+    background: rgb(20, 67, 220);
     color: white;
     border: none;
-    border-radius: 6px;
+    border-radius: 4px;
     cursor: pointer;
     font-weight: bold;
+    margin-top: 10px;
 }
