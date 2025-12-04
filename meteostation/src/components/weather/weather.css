@@ -1,29 +1,43 @@
 .weather-widget {
-  width: 300px;
-  margin: 30px auto;
+  width: 280px;
+  margin: 0 auto;
   padding: 20px;
   border-radius: 16px;
-  background: #f2f5f8;
+  background: #a8cff6;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
   text-align: center;
   font-family: "Inter", sans-serif;
-}
+  box-sizing: border-box;
 
-.weather-search {
+  min-height: 380px;
   display: flex;
-  justify-content: center;
-  gap: 10px;
-  margin-bottom: 15px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
 }
 
-.weather-search input {
-  width: 140px;
+/* Ввід міста */
+.city-input-group {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  height: 35px;
+}
+
+.city-input-group input {
+  width: 160px;
   padding: 6px;
   border: 1px solid #ccc;
   border-radius: 8px;
+  outline: none;
 }
 
-.weather-search button {
+.city-input-group input:focus {
+  border-color: #0078d7;
+}
+
+.city-input-group button {
   padding: 6px 10px;
   border: none;
   border-radius: 8px;
@@ -33,16 +47,53 @@
   transition: 0.2s;
 }
 
-.weather-search button:hover {
+.city-input-group button:hover {
   background: #005fa3;
 }
 
+/* Блок з погодою */
+.weather-display-area {
+  width: 100%;
+  height: 250px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+/* Заповнення коли даних нема */
+.weather-info-placeholder {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  flex-direction: column;
+  text-align: center;
+}
+
+.loading-text {
+  color: #666;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.5; }
+  50% { opacity: 1; }
+  100% { opacity: 0.5; }
+}
+
 .weather-info {
-  margin-top: 10px;
+  padding-top: 15px;
+
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 6px;
+
+  height: 100%;
+  width: 100%;
+  justify-content: flex-start;
 }
 
 .weather-info h3 {
@@ -51,13 +102,21 @@
   color: #333;
 }
 
+.weather-info img {
+  width: 60px;
+  height: 60px;
+  margin: 5px 0;
+}
+
 .weather-info p {
   margin: 3px 0;
   font-size: 0.95rem;
   color: #444;
 }
 
-.error {
-  color: red;
+.status-message {
+  color: rgb(27, 135, 130);
   font-weight: bold;
+  min-height: 20px;
+  margin: 5px 0 0 0;
 }

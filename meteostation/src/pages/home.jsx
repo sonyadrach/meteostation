@@ -7,10 +7,10 @@ import "./home.css";
 export default function HomePage() {
   const navigate = useNavigate();
   
-  // 1. Зчитуємо користувача. ПРИМІТКА: loginUser тепер повертає settings.
+  // 1. Зчитуємо користувача.
   const storedUser = JSON.parse(localStorage.getItem("user"));
   
-  // 2. Стан мови, теми та налаштувань (Ініціалізуємо з user.settings або localStorage)
+  // 2. Стан мови, теми та налаштувань
   const initialLanguage = storedUser?.settings?.language || localStorage.getItem("lang") || "ua";
   const initialTheme = storedUser?.settings?.theme || localStorage.getItem("theme") || "default";
 
@@ -18,9 +18,10 @@ export default function HomePage() {
   const [theme, setTheme] = useState(initialTheme);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false); 
   
-  // 3. Стан міста та повідомлень
+  // 3. Стан міста та повідомлень + РЕКОМЕНДАЦІЇ
   const [savedCityState, setSavedCityState] = useState(storedUser?.city || "");
   const [message, setMessage] = useState("");
+  const [recommendations, setRecommendations] = useState([]); 
 
   const t = translations[language] || translations['ua']; 
   
@@ -47,14 +48,11 @@ export default function HomePage() {
 
   // 5. СИНХРОНІЗАЦІЯ localStorage, ТЕМИ та МІСТА
   useEffect(() => {
-    // А. Застосування теми до <body>
     document.body.className = `theme-${theme}`; 
     localStorage.setItem("theme", theme);
-
-    // Б. Збереження мови в localStorage
     localStorage.setItem("lang", language);
     
-    // В. Синхронізація міста при першому завантаженні
+    // Синхронізація міста при першому завантаженні
     if (storedUser?.city && savedCityState !== storedUser.city) {
         setSavedCityState(storedUser.city);
     }
@@ -77,24 +75,64 @@ export default function HomePage() {
       localStorage.removeItem("user");
       navigate("/");
   };
+  
+  // 7. Функція зворотного виклику для ГЕНЕРАЦІЇ РЕКОМЕНДАЦІЙ
+  const generateRecommendations = (weatherData) => { 
+      if (!weatherData) return setRecommendations([]);
 
-  // 7. Логіка зворотного виклику для WeatherWidget
-  const handleWidgetCitySaved = (newCity) => {
+      let recs = [];
+      const temp = weatherData.temp;
+      const desc = weatherData.description.toLowerCase();
+      const wind = weatherData.wind;
+      const humidity = weatherData.humidity;
+
+      if (temp > 25) {
+          recs.push(t.rec_hot || "На вулиці спекотно. Не забувайте пити воду! 💧");
+      } else if (temp < 5) {
+          recs.push(t.rec_cold || "На вулиці холодно, вдягніться тепліше! 🥶");
+      }
+
+      if (desc.includes('дощ') || desc.includes('rain')) {
+          recs.push(t.rec_rain || "Не забудьте парасольку! ☔");
+      } else if (desc.includes('сонце') || desc.includes('clear')) {
+          recs.push(t.rec_sun || "Сьогодні сонячно, не забудьте сонцезахисний крем.");
+      }
+
+      if (wind > 8) {
+          recs.push(t.rec_windy || "Сьогодні вітряно, будьте обережні з речима. 🌬️");
+      }
+
+      if (humidity > 80) {
+          recs.push(t.rec_humid || "Дуже висока вологість. Можливий туман.");
+      }
+
+      setRecommendations(recs);
+  };
+
+  // 8. Логіка зворотного виклику для WeatherWidget 
+ const handleWidgetCitySaved = (newCity, weatherData) => { 
       setSavedCityState(newCity);
       const updatedUser = { ...storedUser, city: newCity };
       localStorage.setItem("user", JSON.stringify(updatedUser));
       setMessage(t.citySaved || "Місто збережено!");
+      
+      generateRecommendations(weatherData); 
   };
 
+  // 9. Логіка зворотного виклику для WeatherWidget 
+  const handleWeatherUpdate = (weatherData) => { 
+      generateRecommendations(weatherData);
+  };
 
   // Перевірка автентифікації
   if (!storedUser || !storedUser.id) {
     navigate("/"); 
     return null;
   }
-  
-  const userWithCurrentCity = { ...storedUser, city: savedCityState };
-
+  const userWithCurrentCity = {
+  ...storedUser,
+  city: savedCityState   
+};
   return (
     <div className="homepage-container">
       
@@ -104,7 +142,7 @@ export default function HomePage() {
           
           <div className="controls-group"> 
 
-              {/* КНОПКА НАЛАШТУВАННЯ (Іконка Акаунту) */}
+              {/* КНОПКА НАЛАШТУВАННЯ */}
               <div className="settings-menu">
                   <span className="account-icon" onClick={() => setIsSettingsOpen(!isSettingsOpen)}>
                     👤
@@ -136,20 +174,34 @@ export default function HomePage() {
                       </div>
                   )}
               </div> 
-
           </div> 
-      </div> 
+      </div>
+
 
       {/* 2. ІНФОРМАЦІЯ ПРО МІСТО */}
       <h2 className="city-heading">{t.city || "Місто"}: {savedCityState || "Не встановлено"}</h2>
       
       {message && <p className={`status-message ${message === (t.citySaved || "Місто збережено!") ? 'status-success' : 'status-error'}`}>{message}</p>}
 
-      {/* 3. WEATHER WIDGET */}
+      {/* 3. ВІДОБРАЖЕННЯ РЕКОМЕНДАЦІЙ */}
+      {recommendations.length > 0 && (
+          <div className="recommendations-box">
+              <h3>{t.recommendations || "Рекомендації на сьогодні:"}</h3>
+              <ul>
+                  {recommendations.map((rec, index) => (
+                      <li key={index}>⭐ {rec}</li>
+                  ))}
+              </ul>
+          </div>
+      )}
+
+
+      {/* 4. WEATHER WIDGET */}
       <WeatherWidget 
         language={language} 
         user={userWithCurrentCity} 
         onCitySave={handleWidgetCitySaved} 
+        onWeatherUpdate={handleWeatherUpdate} 
       />
     </div>
   );

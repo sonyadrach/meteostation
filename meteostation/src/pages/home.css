@@ -19,7 +19,6 @@ body.theme-dark .settings-options {
     color: #fff;
     border-color: #555;
 }
-/* ДОДАТКОВА ТЕМА */
 body.theme-blue {
     background-color: #1e3a8a;
     color: #fff;
@@ -29,7 +28,6 @@ body.theme-blue .settings-options {
     background-color: #1f3f90;
     color: #fff;
 }
-/* ------------------------------------------- */
 
 .homepage-container {
     max-width: 800px;
@@ -37,27 +35,28 @@ body.theme-blue .settings-options {
     padding: 20px;
     font-family: Arial, sans-serif;
     transition: background-color 0.3s;
-    background-color: white; /* Фон контейнера, щоб контрастувати з body */
+    background-color: white; 
     border-radius: 8px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    min-height: 550px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
 
-/* 1. КОНТРОЛЬ ЗАГОЛОВКУ ТА КНОПОК */
 .header-controls {
     display: flex;
     justify-content: space-between; 
     align-items: center; 
-    margin-bottom: 25px;
+    margin-bottom: 0;
 }
 
 .welcome-title {
-    font-size: 28px;
+    font-size: 20px;
     font-weight: bold;
     margin: 0;
 }
 
-
-/* 2. СТИЛІ МЕНЮ НАЛАШТУВАНЬ (Іконка Акаунту) */
 .settings-menu {
     position: relative; 
     cursor: pointer;
@@ -65,7 +64,7 @@ body.theme-blue .settings-options {
 }
 
 .account-icon {
-    font-size: 30px; /* Збільшуємо іконку */
+    font-size: 30px; 
     padding: 5px;
     border-radius: 50%;
     transition: background 0.2s;
@@ -79,7 +78,7 @@ body.theme-blue .settings-options {
 
 .settings-options {
     position: absolute;
-    top: 40px; /* Трохи нижче іконки */
+    top: 40px; 
     right: 0;
     width: 250px;
     padding: 15px;
@@ -96,7 +95,6 @@ body.theme-blue .settings-options {
     padding-bottom: 8px;
 }
 
-/* 3. СТИЛІ СЕЛЕКТОРІВ (Мова та Тема) */
 .language-selector,
 .theme-selector {
     display: flex;
@@ -122,7 +120,6 @@ body.theme-blue .settings-options {
     font-weight: bold;
 }
 
-/* 4. СТИЛІ СЕЛЕКТОРА ТЕМИ (Кольорові кнопки) */
 .theme-btn {
     width: 25px;
     height: 25px;
@@ -132,15 +129,13 @@ body.theme-blue .settings-options {
 }
 
 .theme-btn.active-theme {
-    border-color: gold; /* Виділяємо активну тему */
+    border-color: gold; 
 }
 
 .theme-default { background: #e0e0e0; }
 .theme-dark { background: #333333; }
 .theme-blue { background: #2a52be; }
 
-
-/* 5. КНОПКА ВИХОДУ В МЕНЮ */
 .logout-btn-menu {
     width: 100%;
     padding: 10px;
@@ -151,4 +146,60 @@ body.theme-blue .settings-options {
     cursor: pointer;
     font-weight: bold;
     margin-top: 10px;
+}
+.recommendations-box {
+    margin-top: 0;
+    padding: 15px;
+    border: 1px solid #007bff;
+    border-radius: 8px;
+    background-color: #e6f7ff; 
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    min-height: 120px;
+    color: #333;
+}
+
+.recommendations-box h3 {
+    margin: 0 0 10px 0;
+    font-size: 18px;
+    color: #007bff;
+    border-bottom: 1px solid #5d84ab;
+    padding-bottom: 5px;
+}
+
+.recommendations-box ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-size: 15px;
+}
+
+.recommendations-box li {
+    margin-bottom: 5px;
+    line-height: 1.4;
+    margin-top: 20px;
+    padding: 15px;
+    min-height: 100px;
+}
+
+body.theme-dark .recommendations-box {
+    background-color: #3a3a3a;
+    border-color: #6a6a6a;
+    color: #c3d6f3; 
+}
+body.theme-dark .recommendations-box h3 {
+    color: #72aaff; 
+    border-bottom: 1px solid #5a5a5a;
+}
+body.theme-blue .recommendations-box {
+    background-color: #1f3f90; 
+    border-color: #5577cc;
+    color: #f4f4f4; 
+}
+body.theme-blue .recommendations-box h3 {
+    color: #b700ff; 
+    border-bottom: 1px solid #4a6aa6;
+}
+.city-heading {
+    font-size: 18px;
+    margin: 0;
 }
