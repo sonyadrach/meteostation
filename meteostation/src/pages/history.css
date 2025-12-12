@@ -1,0 +1,1337 @@
+.history-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  animation: fadeIn 0.5s ease-out;
+}
+
+/* Анімація появи */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Хедер */
+.history-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 30px;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.back-button {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.back-button:hover {
+  background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+  transform: scale(1.05);
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.back-button:focus {
+  outline: 2px solid white;
+  outline-offset: 2px;
+}
+
+/* Інформація про місто */
+.city-info {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 25px;
+  border-radius: 15px;
+  margin-bottom: 30px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  animation: slideUp 0.6s ease-out;
+}
+
+@keyframes slideUp {
+  from { 
+    opacity: 0; 
+    transform: translateY(30px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+.city-info h3 {
+  margin: 0 0 15px 0;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.highlight {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 8px 18px;
+  border-radius: 25px;
+  font-weight: bold;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.city-info-details {
+  margin-bottom: 15px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.city-info-details p {
+  margin: 0;
+  opacity: 0.9;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.city-info-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.view-type-selector {
+  display: flex;
+  gap: 5px;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 5px;
+  border-radius: 10px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.view-type-btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: white;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.view-type-btn:focus {
+  outline: 2px solid rgba(255, 255, 255, 0.5);
+  outline-offset: 2px;
+}
+
+.view-type-btn.active {
+  background: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.refresh-btn {
+  padding: 10px 20px;
+  background: white;
+  color: #667eea;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+  font-size: 14px;
+}
+
+.refresh-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.refresh-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.refresh-btn:focus {
+  outline: 2px solid #667eea;
+  outline-offset: 2px;
+}
+
+/* Таблиця */
+.history-table {
+  background: white;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.08);
+  margin-bottom: 40px;
+  overflow-x: auto;
+  animation: fadeIn 0.7s ease-out;
+}
+
+.history-table table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 900px; 
+}
+
+.history-table th {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 18px 15px;
+  text-align: center;
+  font-weight: 600;
+  font-size: 15px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.history-table th:last-child {
+  border-right: none;
+}
+
+.sortable-header {
+  cursor: pointer;
+  position: relative;
+  user-select: none;
+  transition: background 0.2s;
+}
+
+.sortable-header:hover {
+  background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+}
+
+.sortable-header::after {
+  content: "↕";
+  margin-left: 8px;
+  opacity: 0.5;
+  font-size: 12px;
+  display: inline-block;
+  transition: transform 0.2s;
+}
+
+.sortable-header.asc::after {
+  content: "↑";
+  opacity: 1;
+  transform: rotate(0deg);
+}
+
+.sortable-header.desc::after {
+  content: "↓";
+  opacity: 1;
+  transform: rotate(0deg);
+}
+
+.history-table td {
+  padding: 16px 15px;
+  border-bottom: 1px solid #f0f0f0;
+  transition: background 0.2s;
+  vertical-align: middle;
+  text-align: center;
+  border-right: 1px solid #f0f0f0;
+}
+
+.history-table td:last-child {
+  border-right: none;
+}
+
+.history-table tr:hover {
+  background: #f9f9ff;
+}
+
+.history-table tr:last-child td {
+  border-bottom: none;
+}
+
+/* Клітинки таблиці */
+.date-cell {
+  min-width: 130px;
+  text-align: left;
+}
+
+.date-day {
+  font-weight: bold;
+  color: #667eea;
+  font-size: 14px;
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.date-full {
+  font-size: 12px;
+  color: #666;
+}
+
+/* Температура - ОКРЕМА КОЛОНКА */
+.temp-cell {
+  min-width: 100px;
+  text-align: center;
+}
+
+.temp-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.temp-value {
+  font-weight: bold;
+  font-size: 20px;
+  color: #333;
+  display: block;
+}
+
+.temp-trend {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: bold;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.temp-trend.positive {
+  background: #ffebee;
+  color: #f44336;
+}
+
+.temp-trend.positive::before {
+  content: "↑";
+}
+
+.temp-trend.negative {
+  background: #e3f2fd;
+  color: #2196f3;
+}
+
+.temp-trend.negative::before {
+  content: "↓";
+}
+
+/* Погода - ОКРЕМА КОЛОНКА */
+.weather-cell {
+  min-width: 180px;
+  text-align: center;
+}
+
+.weather-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.weather-icon img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+
+.weather-desc {
+  color: #333;
+  font-size: 14px;
+  text-transform: capitalize;
+  font-weight: 500;
+  max-width: 150px;
+  word-wrap: break-word;
+}
+
+/* Вологість */
+.humidity-cell {
+  min-width: 120px;
+  text-align: center;
+}
+
+.humidity-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.humidity-value {
+  font-weight: bold;
+  color: #333;
+  font-size: 16px;
+  display: block;
+}
+
+.humidity-bar-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.humidity-bar {
+  width: 100px;
+  height: 6px;
+  background: #e0e0e0;
+  border-radius: 3px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.humidity-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4dabf7, #2196f3);
+  border-radius: 3px;
+  width: 0;
+  animation: fillWidth 1.5s ease-out forwards;
+}
+
+@keyframes fillWidth {
+  to {
+    width: var(--fill-percent);
+  }
+}
+
+/* Вітер */
+.wind-cell {
+  min-width: 140px;
+  text-align: center;
+}
+
+.wind-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.wind-value {
+  font-weight: bold;
+  color: #333;
+  font-size: 16px;
+}
+
+.wind-direction-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.wind-direction-icon {
+  font-size: 20px;
+  color: #666;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f0f0f0;
+  border-radius: 50%;
+  transition: transform 0.3s;
+}
+
+.wind-direction-icon:hover {
+  transform: rotate(15deg);
+}
+
+.wind-direction-text {
+  font-size: 12px;
+  color: #666;
+  font-weight: 500;
+}
+
+/* Графік температури */
+.temperature-chart {
+  background: white;
+  border-radius: 15px;
+  padding: 30px;
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.08);
+  margin-bottom: 40px;
+  animation: fadeIn 0.8s ease-out;
+}
+
+.temperature-chart h4 {
+  margin: 0 0 25px 0;
+  color: #333;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+}
+
+.chart-bars {
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-end;
+  height: 250px;
+  padding: 30px 20px;
+  border-top: 1px solid #eee;
+  border-bottom: 1px solid #eee;
+  margin: 20px 0;
+  position: relative;
+  min-height: 200px;
+}
+
+.chart-bars.loading {
+  position: relative;
+  opacity: 0.7;
+}
+
+.chart-bars.loading::after {
+  content: "Завантаження даних...";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #666;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.chart-bar-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  flex: 1;
+  max-width: 80px;
+  height: 100%;
+  justify-content: flex-end;
+}
+
+.bar-label {
+  font-size: 13px;
+  color: #666;
+  font-weight: 500;
+  text-align: center;
+  white-space: nowrap;
+  min-height: 20px;
+}
+
+.chart-bar {
+  width: 35px;
+  border-radius: 8px 8px 0 0;
+  position: relative;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  background: linear-gradient(to top, #667eea, #764ba2);
+  height: var(--bar-height);
+  animation: growBar 1s ease-out;
+}
+
+@keyframes growBar {
+  from { height: 0; opacity: 0; }
+  to { height: var(--bar-height); opacity: 1; }
+}
+
+.chart-bar:hover {
+  transform: scale(1.05);
+  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+}
+
+.bar-value {
+  position: absolute;
+  top: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 13px;
+  font-weight: bold;
+  color: #333;
+  background: white;
+  padding: 5px 10px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  white-space: nowrap;
+  z-index: 1;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.chart-bar:hover .bar-value {
+  opacity: 1;
+}
+
+.bar-date {
+  font-size: 11px;
+  color: #999;
+  margin-top: 5px;
+  text-align: center;
+}
+
+/* Аналітика */
+.analytics-section {
+  margin-bottom: 40px;
+  animation: fadeIn 0.9s ease-out;
+}
+
+.analytics-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 25px;
+  margin-bottom: 25px;
+}
+
+.analytics-card {
+  background: white;
+  border-radius: 15px;
+  padding: 25px;
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s ease;
+}
+
+.analytics-card:hover {
+  transform: translateY(-5px);
+}
+
+.analytics-card h4 {
+  margin: 0 0 20px 0;
+  color: #333;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+}
+
+.trend-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.trend-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 15px;
+  background: #f8f9ff;
+  border-radius: 10px;
+  border-left: 4px solid #667eea;
+  transition: background 0.3s;
+}
+
+.trend-item:hover {
+  background: #f0f2ff;
+}
+
+.trend-date {
+  font-weight: 500;
+  color: #333;
+  font-size: 14px;
+}
+
+.trend-arrow {
+  font-weight: bold;
+  padding: 4px 10px;
+  border-radius: 15px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.trend-arrow.rising {
+  background: #ffebee;
+  color: #f44336;
+}
+
+.trend-arrow.rising::before {
+  content: "↑";
+}
+
+.trend-arrow.falling {
+  background: #e3f2fd;
+  color: #2196f3;
+}
+
+.trend-arrow.falling::before {
+  content: "↓";
+}
+
+.conditions-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+}
+
+.condition-item {
+  padding: 15px;
+  border-radius: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: white;
+  font-weight: 500;
+  transition: transform 0.3s ease;
+  min-height: 70px;
+}
+
+.condition-item:hover {
+  transform: scale(1.02);
+}
+
+.condition-item.sunny { 
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  box-shadow: 0 4px 15px rgba(255, 165, 0, 0.3);
+}
+
+.condition-item.cloudy { 
+  background: linear-gradient(135deg, #A9A9A9, #808080);
+  box-shadow: 0 4px 15px rgba(128, 128, 128, 0.3);
+}
+
+.condition-item.rainy { 
+  background: linear-gradient(135deg, #4dabf7, #2196f3);
+  box-shadow: 0 4px 15px rgba(33, 150, 243, 0.3);
+}
+
+.condition-item.windy { 
+  background: linear-gradient(135deg, #90CAF9, #64B5F6);
+  box-shadow: 0 4px 15px rgba(100, 181, 246, 0.3);
+}
+
+.condition-label {
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+.condition-value {
+  font-size: 18px;
+  font-weight: bold;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.analytics-summary {
+  background: white;
+  border-radius: 15px;
+  padding: 25px;
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.08);
+  animation: fadeIn 1s ease-out;
+}
+
+.analytics-summary h4 {
+  margin: 0 0 25px 0;
+  color: #333;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+}
+
+.summary-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.summary-stat {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 20px;
+  background: #f8f9ff;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(102, 126, 234, 0.1);
+}
+
+.summary-stat:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
+}
+
+.stat-icon {
+  font-size: 24px;
+  width: 50px;
+  height: 50px;
+  background: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  color: #667eea;
+  flex-shrink: 0;
+}
+
+.stat-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.stat-label {
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 5px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.stat-value {
+  font-size: 20px;
+  font-weight: bold;
+  color: #333;
+}
+
+/* Статистика */
+.statistics-box {
+  background: white;
+  border-radius: 15px;
+  padding: 30px;
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.08);
+  animation: fadeIn 1.1s ease-out;
+}
+
+.statistics-box h4 {
+  margin: 0 0 25px 0;
+  color: #333;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.stat-item {
+  text-align: center;
+  padding: 25px 15px;
+  background: linear-gradient(135deg, #f8f9ff, #eef1ff);
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(102, 126, 234, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #667eea, #764ba2);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.stat-item:hover::before {
+  opacity: 1;
+}
+
+.stat-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
+}
+
+.stat-label {
+  display: block;
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 10px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stat-value {
+  display: block;
+  font-size: 28px;
+  font-weight: bold;
+  color: #667eea;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Інші елементи */
+.no-history,
+.no-data {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.08);
+  margin: 20px 0;
+  font-style: italic;
+}
+
+.no-data {
+  background: #f9f9f9;
+}
+
+.loading-spinner {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.spinner {
+  border: 4px solid rgba(102, 126, 234, 0.3);
+  border-top: 4px solid #667eea;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 25px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.error-message {
+  background: linear-gradient(135deg, #ffe6e6, #ffcccc);
+  border: 1px solid #ff9999;
+  border-radius: 12px;
+  padding: 25px;
+  margin: 30px 0;
+  text-align: center;
+  color: #cc0000;
+  box-shadow: 0 4px 15px rgba(204, 0, 0, 0.1);
+  animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+  20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+.no-city-message {
+  text-align: center;
+  padding: 80px 30px;
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+  margin-top: 40px;
+  animation: fadeIn 0.5s ease-out;
+}
+
+.no-city-icon {
+  font-size: 80px;
+  margin-bottom: 30px;
+  opacity: 0.7;
+  color: #667eea;
+}
+
+.no-city-message h3 {
+  color: #333;
+  margin-bottom: 15px;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.no-city-message p {
+  color: #666;
+  margin-bottom: 40px;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.go-to-home-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 15px 40px;
+  border-radius: 30px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+
+.go-to-home-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+}
+
+.go-to-home-btn:focus {
+  outline: 2px solid #667eea;
+  outline-offset: 2px;
+}
+
+/* Адаптивність */
+@media (max-width: 768px) {
+  .history-container {
+    padding: 10px;
+  }
+  
+  .history-header {
+    margin-bottom: 20px;
+  }
+  
+  .city-info {
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  
+  .city-info h3 {
+    font-size: 18px;
+  }
+  
+  .city-info-controls {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+  
+  .view-type-selector {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .view-type-btn {
+    flex: 1;
+    justify-content: center;
+    padding: 10px;
+    font-size: 13px;
+  }
+  
+  .refresh-btn {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .history-table {
+    font-size: 14px;
+    border-radius: 10px;
+  }
+  
+  .history-table th,
+  .history-table td {
+    padding: 12px 10px;
+  }
+  
+  .history-table th {
+    font-size: 13px;
+    padding: 15px 10px;
+  }
+  
+  .temp-value {
+    font-size: 18px;
+  }
+  
+  .weather-cell,
+  .humidity-cell,
+  .wind-cell {
+    min-width: 120px;
+  }
+  
+  .weather-icon img {
+    width: 30px;
+    height: 30px;
+  }
+  
+  .weather-desc {
+    font-size: 12px;
+  }
+  
+  .humidity-bar {
+    width: 80px;
+  }
+  
+  .analytics-cards {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+  
+  .conditions-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .summary-stats {
+    grid-template-columns: 1fr;
+  }
+  
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+  }
+  
+  .stat-item {
+    padding: 20px 10px;
+  }
+  
+  .stat-value {
+    font-size: 24px;
+  }
+  
+  .temperature-chart {
+    padding: 20px;
+  }
+  
+  .chart-bars {
+    height: 200px;
+    padding: 20px 10px;
+  }
+  
+  .chart-bar {
+    width: 25px;
+  }
+  
+  .bar-label {
+    font-size: 11px;
+  }
+  
+  .bar-value {
+    font-size: 11px;
+    padding: 3px 6px;
+  }
+}
+
+@media (max-width: 480px) {
+  .city-info-details {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .highlight {
+    font-size: 14px;
+    padding: 6px 15px;
+  }
+  
+  .history-table table {
+    min-width: 700px;
+  }
+  
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .no-city-message {
+    padding: 40px 20px;
+  }
+  
+  .no-city-message h3 {
+    font-size: 20px;
+  }
+  
+  .no-city-message p {
+    font-size: 14px;
+  }
+  
+  .go-to-home-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* Темна тема */
+body.theme-dark .history-table,
+body.theme-dark .temperature-chart,
+body.theme-dark .statistics-box,
+body.theme-dark .no-history,
+body.theme-dark .analytics-card,
+body.theme-dark .analytics-summary,
+body.theme-dark .no-data {
+  background: #2d3748;
+  color: #e2e8f0;
+  border-color: #4a5568;
+}
+
+body.theme-dark .history-table tr:hover,
+body.theme-dark .summary-stat,
+body.theme-dark .trend-item {
+  background: #4a5568;
+}
+
+body.theme-dark .history-table th {
+  background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+body.theme-dark .history-table td {
+  border-right: 1px solid #4a5568;
+}
+
+body.theme-dark .temp-value,
+body.theme-dark .weather-desc,
+body.theme-dark .wind-value,
+body.theme-dark .analytics-card h4,
+body.theme-dark .analytics-summary h4,
+body.theme-dark .statistics-box h4,
+body.theme-dark .temperature-chart h4,
+body.theme-dark .trend-date,
+body.theme-dark .stat-value {
+  color: #e2e8f0;
+}
+
+body.theme-dark .date-day,
+body.theme-dark .bar-label,
+body.theme-dark .stat-label,
+body.theme-dark .date-full {
+  color: #a0aec0;
+}
+
+body.theme-dark .temp-trend.positive {
+  background: rgba(244, 67, 54, 0.2);
+  color: #ff9999;
+}
+
+body.theme-dark .temp-trend.negative {
+  background: rgba(33, 150, 243, 0.2);
+  color: #99ccff;
+}
+
+body.theme-dark .humidity-bar {
+  background: #4a5568;
+}
+
+body.theme-dark .wind-direction-icon {
+  background: #4a5568;
+  color: #a0aec0;
+}
+
+body.theme-dark .chart-bar {
+  background: linear-gradient(to top, #4a5568, #667eea);
+}
+
+body.theme-dark .bar-value {
+  background: #2d3748;
+  color: #e2e8f0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+body.theme-dark .stat-item {
+  background: linear-gradient(135deg, rgba(74, 85, 104, 0.5), rgba(45, 55, 72, 0.5));
+}
+
+body.theme-dark .no-city-message {
+  background: #2d3748;
+  color: #e2e8f0;
+}
+
+body.theme-dark .no-city-message h3 {
+  color: #e2e8f0;
+}
+
+body.theme-dark .no-city-message p {
+  color: #a0aec0;
+}
+
+body.theme-dark .error-message {
+  background: #4a1a1a;
+  border-color: #742a2a;
+  color: #ff9999;
+}
+
+body.theme-dark .no-data {
+  background: #4a5568;
+  color: #a0aec0;
+}
+
+/* Синя тема */
+body.theme-blue .city-info {
+  background: linear-gradient(135deg, #1f3f90 0%, #2a52be 100%);
+}
+
+body.theme-blue .history-table th {
+  background: linear-gradient(135deg, #1f3f90 0%, #2a52be 100%);
+}
+
+body.theme-blue .stat-item {
+  background: linear-gradient(135deg, rgba(31, 63, 144, 0.1), rgba(42, 82, 190, 0.1));
+}
+
+body.theme-blue .stat-value {
+  color: #4299e1;
+}
+
+body.theme-blue .no-city-message {
+  background: linear-gradient(135deg, #1f3f90 0%, #2a52be 100%);
+  color: #f4f4f4;
+}
+
+body.theme-blue .error-message {
+  background: #3d1a4a;
+  border-color: #5d2a6d;
+  color: #ff99cc;
+}
+
+body.theme-blue .chart-bar {
+  background: linear-gradient(to top, #1f3f90, #2a52be);
+}
+
+body.theme-blue .temp-trend.positive {
+  background: rgba(255, 87, 51, 0.2);
+  color: #ff6b4a;
+}
+
+body.theme-blue .temp-trend.negative {
+  background: rgba(66, 153, 225, 0.2);
+  color: #63b3ed;
+}
+
+/* Спеціальні класи для вирівнювання */
+.text-left { text-align: left; }
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+
+/* Утилітарні класи для відступів */
+.mt-20 { margin-top: 20px; }
+.mb-20 { margin-bottom: 20px; }
+.mt-30 { margin-top: 30px; }
+.mb-30 { margin-bottom: 30px; }
+
+.history-table::-webkit-scrollbar {
+  height: 8px;
+}
+
+.history-table::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.history-table::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  border-radius: 4px;
+}
+
+.history-table::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #5a6fd8, #6a4190);
+}
+
+body.theme-dark .history-table::-webkit-scrollbar-track {
+  background: #4a5568;
+}
+
+body.theme-dark .history-table::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #4a5568, #667eea);
+}

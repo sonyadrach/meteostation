@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import WeatherWidget from "../components/weather/weatherwidget";
 import { translations } from "../i18n/translations";
@@ -18,10 +18,12 @@ export default function HomePage() {
   const [theme, setTheme] = useState(initialTheme);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false); 
   
-  // 3. Стан міста та повідомлень + РЕКОМЕНДАЦІЇ
+  // 3. Стан міста та повідомлень + РЕКОМЕНДАЦІЇ + НАГАДУВАННЯ
   const [savedCityState, setSavedCityState] = useState(storedUser?.city || "");
   const [message, setMessage] = useState("");
   const [recommendations, setRecommendations] = useState([]); 
+  const [todayReminders, setTodayReminders] = useState([]);
+  const [showReminders, setShowReminders] = useState(true);
 
   const t = translations[language] || translations['ua']; 
   
@@ -45,8 +47,33 @@ export default function HomePage() {
     }
   };
 
+  // 5. Завантаження сьогоднішніх нагадувань
+  const loadTodayReminders = useCallback(async () => {
+    if (!storedUser?.id || !savedCityState) return;
+    
+    try {
+      const today = new Date().toISOString().split('T')[0];
+      const tomorrow = new Date(Date.now() + 86400000).toISOString().split('T')[0];
+      
+      const remindersData = await window.api.getReminders({
+        userId: storedUser.id
+      });
+      
+      if (remindersData.success && remindersData.reminders) {
+        // Фільтруємо нагадування для поточного міста на сьогодні або завтра
+        const filteredReminders = remindersData.reminders.filter(reminder => 
+          reminder.city === savedCityState && 
+          (reminder.date === today || reminder.date === tomorrow)
+        );
+        
+        setTodayReminders(filteredReminders);
+      }
+    } catch (error) {
+      console.error("Помилка завантаження нагадувань:", error);
+    }
+  }, [storedUser?.id, savedCityState]);
 
-  // 5. СИНХРОНІЗАЦІЯ localStorage, ТЕМИ та МІСТА
+  // 6. СИНХРОНІЗАЦІЯ localStorage, ТЕМИ та МІСТА
   useEffect(() => {
     document.body.className = `theme-${theme}`; 
     localStorage.setItem("theme", theme);
@@ -59,8 +86,12 @@ export default function HomePage() {
     
   }, [storedUser?.city, savedCityState, theme, language]); 
 
+  // 7. Завантажити нагадування при зміні міста
+  useEffect(() => {
+    loadTodayReminders();
+  }, [loadTodayReminders]);
 
-  // 6. Функції керування станом
+  // 8. Функції керування станом
   const changeTheme = (newTheme) => {
     setTheme(newTheme);
     saveSettingsToDB(newTheme, language); 
@@ -76,7 +107,7 @@ export default function HomePage() {
       navigate("/");
   };
   
-  // 7. Функція зворотного виклику для ГЕНЕРАЦІЇ РЕКОМЕНДАЦІЙ
+  // 9. Функція зворотного виклику для ГЕНЕРАЦІЇ РЕКОМЕНДАЦІЙ
   const generateRecommendations = (weatherData) => { 
       if (!weatherData) return setRecommendations([]);
 
@@ -109,7 +140,7 @@ export default function HomePage() {
       setRecommendations(recs);
   };
 
-  // 8. Логіка зворотного виклику для WeatherWidget 
+  // 10. Логіка зворотного виклику для WeatherWidget 
  const handleWidgetCitySaved = (newCity, weatherData) => { 
       setSavedCityState(newCity);
       const updatedUser = { ...storedUser, city: newCity };
@@ -117,9 +148,10 @@ export default function HomePage() {
       setMessage(t.citySaved || "Місто збережено!");
       
       generateRecommendations(weatherData); 
+      loadTodayReminders(); // Оновити нагадування при зміні міста
   };
 
-  // 9. Логіка зворотного виклику для WeatherWidget 
+  // 11. Логіка зворотного виклику для WeatherWidget 
   const handleWeatherUpdate = (weatherData) => { 
       generateRecommendations(weatherData);
   };
@@ -129,10 +161,12 @@ export default function HomePage() {
     navigate("/"); 
     return null;
   }
+  
   const userWithCurrentCity = {
-  ...storedUser,
-  city: savedCityState   
-};
+    ...storedUser,
+    city: savedCityState   
+  };
+  
   return (
     <div className="homepage-container">
       
@@ -177,13 +211,28 @@ export default function HomePage() {
           </div> 
       </div>
 
+      {/* 2. НАВІГАЦІЯ ДО ВІДЖЕТІВ */}
+      <div className="widgets-navigation">
+        <button 
+          className="nav-widget-btn"
+          onClick={() => navigate('/reminders')}
+        >
+          📝 {t.myForecastTomorrow || "Мій прогноз на завтра"}
+        </button>
+        <button 
+          className="nav-widget-btn"
+          onClick={() => navigate('/history')}
+        >
+          📊 {t.weatherHistory || "Історія метеоданих"}
+        </button>
+      </div>
 
-      {/* 2. ІНФОРМАЦІЯ ПРО МІСТО */}
+      {/* 3. ІНФОРМАЦІЯ ПРО МІСТО */}
       <h2 className="city-heading">{t.city || "Місто"}: {savedCityState || "Не встановлено"}</h2>
       
       {message && <p className={`status-message ${message === (t.citySaved || "Місто збережено!") ? 'status-success' : 'status-error'}`}>{message}</p>}
 
-      {/* 3. ВІДОБРАЖЕННЯ РЕКОМЕНДАЦІЙ */}
+      {/* 4. ВІДОБРАЖЕННЯ РЕКОМЕНДАЦІЙ */}
       {recommendations.length > 0 && (
           <div className="recommendations-box">
               <h3>{t.recommendations || "Рекомендації на сьогодні:"}</h3>
@@ -195,8 +244,56 @@ export default function HomePage() {
           </div>
       )}
 
+      {/* 5. ВІДЖЕТ СЬОГОДНІШНІХ НАГАДУВАНЬ */}
+      {todayReminders.length > 0 && showReminders && (
+        <div className="today-reminders-box">
+          <div className="today-reminders-header">
+            <h3>📌 {t.myForecastTomorrow || "Мій прогноз на завтра"}</h3>
+            <button 
+              className="close-reminders-btn"
+              onClick={() => setShowReminders(false)}
+              title={t.close || "Закрити"}
+            >
+              ×
+            </button>
+          </div>
+          <div className="today-reminders-list">
+            {todayReminders.map((reminder, index) => (
+              <div key={index} className="today-reminder-item">
+                <p className="reminder-text">📋 {reminder.text}</p>
+                <div className="reminder-meta">
+                  <span className="reminder-city">{reminder.city}</span>
+                  <span className="reminder-time">
+                    {new Date(reminder.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="reminders-footer">
+            <button 
+              className="view-all-reminders-btn"
+              onClick={() => navigate('/reminders')}
+            >
+              {t.viewAllReminders || "Переглянути всі нагадування"} →
+            </button>
+          </div>
+        </div>
+      )}
 
-      {/* 4. WEATHER WIDGET */}
+      {/* 6. КНОПКА ДЛЯ ПОКАЗУ ПРИХОВАНИХ НАГАДУВАНЬ */}
+      {todayReminders.length > 0 && !showReminders && (
+        <div className="show-reminders-btn-container">
+          <button 
+            className="show-reminders-btn"
+            onClick={() => setShowReminders(true)}
+          >
+            📌 {t.showReminders || "Показати нагадування"} ({todayReminders.length})
+          </button>
+        </div>
+      )}
+
+      {/* 7. WEATHER WIDGET */}
       <WeatherWidget 
         language={language} 
         user={userWithCurrentCity} 

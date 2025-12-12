@@ -113,11 +113,92 @@ function updateUserSettings(userId, { theme, language }, callback) {
     callback(err);
   });
 }
+db.run(`CREATE TABLE IF NOT EXISTS reminders (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER,
+  city TEXT NOT NULL,
+  text TEXT NOT NULL,
+  date DATE NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id)
+)`);
+
+// Створення таблиці історії погоди
+db.run(`CREATE TABLE IF NOT EXISTS weather_history (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER,
+  city TEXT NOT NULL,
+  date DATE NOT NULL,
+  temp REAL NOT NULL,
+  description TEXT NOT NULL,
+  icon TEXT NOT NULL,
+  humidity INTEGER NOT NULL,
+  wind REAL NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id),
+  UNIQUE(user_id, city, date)
+)`);
+
+// Функція для додавання нагадування
+const addReminder = (userId, city, text, date, callback) => {
+  db.run(
+    `INSERT INTO reminders (user_id, city, text, date) VALUES (?, ?, ?, ?)`,
+    [userId, city, text, date],
+    function(err) {
+      callback(err, this?.lastID);
+    }
+  );
+};
+
+// Функція для отримання нагадувань користувача
+const getReminders = (userId, callback) => {
+  db.all(
+    `SELECT * FROM reminders WHERE user_id = ? ORDER BY date DESC, created_at DESC`,
+    [userId],
+    callback
+  );
+};
+
+// Функція для видалення нагадування
+const deleteReminder = (id, callback) => {
+  db.run(`DELETE FROM reminders WHERE id = ?`, [id], callback);
+};
+
+// Функція для додавання запису історії
+const addWeatherHistory = (userId, city, weatherData, callback) => {
+  const { temp, description, icon, humidity, wind } = weatherData;
+  const today = new Date().toISOString().split('T')[0];
+  
+  db.run(
+    `INSERT OR REPLACE INTO weather_history 
+     (user_id, city, date, temp, description, icon, humidity, wind) 
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+    [userId, city, today, temp, description, icon, humidity, wind],
+    callback
+  );
+};
+
+// Функція для отримання історії погоди
+const getWeatherHistory = (userId, city, limit = 10, callback) => {
+  db.all(
+    `SELECT * FROM weather_history 
+     WHERE user_id = ? AND city = ? 
+     ORDER BY date DESC 
+     LIMIT ?`,
+    [userId, city, limit],
+    callback
+  );
+};
 
 module.exports = {
   db,
   registerUser,
   loginUser,
   updateUserCity,
-  updateUserSettings, // Експортуємо нову функцію
+  updateUserSettings,
+  addReminder,
+  getReminders,
+  deleteReminder,
+  addWeatherHistory,
+  getWeatherHistory
 };

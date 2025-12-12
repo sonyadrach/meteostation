@@ -1,6 +1,6 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
-const { db, registerUser, loginUser, updateUserCity, updateUserSettings } = require('./db.js');
+const { db, registerUser, loginUser, updateUserCity, updateUserSettings, addReminder, getReminders, deleteReminder, addWeatherHistory, getWeatherHistory } = require('./db.js');
 
 function createWindow() {
   const win = new BrowserWindow({
@@ -76,6 +76,74 @@ ipcMain.handle('update-user-settings', async (event, { userId, theme, language }
         resolve({ success: false, message: 'Помилка при оновленні налаштувань: ' + err.message });
       } else {
         resolve({ success: true });
+      }
+    });
+  });
+});
+// Додати в main.js після існуючих обробників:
+
+// === Нагадування ===
+ipcMain.handle('add-reminder', async (event, data) => {
+  const { userId, city, text, date } = data;
+  return new Promise((resolve) => {
+    addReminder(userId, city, text, date, (err, id) => {
+      if (err) {
+        resolve({ success: false, message: 'Помилка при додаванні нагадування: ' + err.message });
+      } else {
+        resolve({ success: true, id });
+      }
+    });
+  });
+});
+
+ipcMain.handle('get-reminders', async (event, data) => {
+  const { userId } = data;
+  return new Promise((resolve) => {
+    getReminders(userId, (err, reminders) => {
+      if (err) {
+        resolve({ success: false, message: 'Помилка при отриманні нагадувань: ' + err.message });
+      } else {
+        resolve({ success: true, reminders });
+      }
+    });
+  });
+});
+
+ipcMain.handle('delete-reminder', async (event, data) => {
+  const { id } = data;
+  return new Promise((resolve) => {
+    deleteReminder(id, (err) => {
+      if (err) {
+        resolve({ success: false, message: 'Помилка при видаленні нагадування: ' + err.message });
+      } else {
+        resolve({ success: true });
+      }
+    });
+  });
+});
+
+// === Історія погоди ===
+ipcMain.handle('add-weather-history', async (event, data) => {
+  const { userId, city, weatherData } = data;
+  return new Promise((resolve) => {
+    addWeatherHistory(userId, city, weatherData, (err) => {
+      if (err) {
+        resolve({ success: false, message: 'Помилка при збереженні історії: ' + err.message });
+      } else {
+        resolve({ success: true });
+      }
+    });
+  });
+});
+
+ipcMain.handle('get-weather-history', async (event, data) => {
+  const { userId, city, limit = 10 } = data;
+  return new Promise((resolve) => {
+    getWeatherHistory(userId, city, limit, (err, history) => {
+      if (err) {
+        resolve({ success: false, message: 'Помилка при отриманні історії: ' + err.message });
+      } else {
+        resolve({ success: true, history });
       }
     });
   });

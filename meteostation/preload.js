@@ -7,6 +7,11 @@ contextBridge.exposeInMainWorld('api', {
   getUserCity: (userId) => ipcRenderer.invoke('get-user-city', userId),
   updateUserCity: (data) => ipcRenderer.invoke('update-user-city', data),
   updateUserSettings: (data) => ipcRenderer.invoke('update-user-settings', data), 
+  addReminder: (data) => ipcRenderer.invoke('add-reminder', data),
+  getReminders: (data) => ipcRenderer.invoke('get-reminders', data),
+  deleteReminder: (data) => ipcRenderer.invoke('delete-reminder', data),
+    addWeatherHistory: (data) => ipcRenderer.invoke('add-weather-history', data),
+  getWeatherHistory: (data) => ipcRenderer.invoke('get-weather-history', data),
 });
 
 contextBridge.exposeInMainWorld('env', { apiKey });

@@ -1,19 +1,18 @@
 .weather-widget {
-  width: 280px;
+  width: 300px;
   margin: 0 auto;
   padding: 20px;
-  border-radius: 16px;
-  background: #a8cff6;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  border-radius: 18px;
+  background: linear-gradient(135deg, #a8cff6, #d6e9ff);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   text-align: center;
   font-family: "Inter", sans-serif;
   box-sizing: border-box;
 
-  min-height: 380px;
   display: flex;
   flex-direction: column;
+  gap: 12px;
   align-items: center;
-  justify-content: flex-start;
 }
 
 /* Ввід міста */
@@ -26,19 +25,22 @@
 }
 
 .city-input-group input {
-  width: 160px;
-  padding: 6px;
-  border: 1px solid #ccc;
+  width: 170px;
+  padding: 6px 10px;
+  border: 1px solid #b5cde0;
   border-radius: 8px;
   outline: none;
+  transition: 0.2s;
+  background: #fff;
 }
 
 .city-input-group input:focus {
   border-color: #0078d7;
+  box-shadow: 0 0 4px rgba(0, 120, 215, 0.4);
 }
 
 .city-input-group button {
-  padding: 6px 10px;
+  padding: 6px 14px;
   border: none;
   border-radius: 8px;
   background: #0078d7;
@@ -54,7 +56,7 @@
 /* Блок з погодою */
 .weather-display-area {
   width: 100%;
-  height: 250px;
+  min-height: 230px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -70,6 +72,7 @@
   width: 100%;
   flex-direction: column;
   text-align: center;
+  color: #444;
 }
 
 .loading-text {
@@ -78,45 +81,97 @@
 }
 
 @keyframes pulse {
-  0% { opacity: 0.5; }
+  0% { opacity: 0.4; }
   50% { opacity: 1; }
-  100% { opacity: 0.5; }
+  100% { opacity: 0.4; }
 }
 
+/* Поточна погода */
 .weather-info {
-  padding-top: 15px;
-
+  padding-top: 10px;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 6px;
-
-  height: 100%;
   width: 100%;
-  justify-content: flex-start;
 }
 
 .weather-info h3 {
   margin: 0;
   font-size: 1.2rem;
-  color: #333;
+  color: #222;
 }
 
 .weather-info img {
-  width: 60px;
-  height: 60px;
-  margin: 5px 0;
+  width: 62px;
+  height: 62px;
+  margin: 4px 0;
 }
 
 .weather-info p {
-  margin: 3px 0;
+  margin: 2px 0;
   font-size: 0.95rem;
-  color: #444;
+  color: #333;
 }
 
+/* Повідомлення */
 .status-message {
   color: rgb(27, 135, 130);
   font-weight: bold;
   min-height: 20px;
-  margin: 5px 0 0 0;
+  margin: 0;
+}
+
+/* --- ПРОГНОЗ НА ГОДИНИ --- */
+.forecast-hours,
+.forecast-days {
+  width: 100%;
+  margin-top: 10px;
+  text-align: center;
+}
+
+.forecast-hours h4,
+.forecast-days h4 {
+  font-size: 1rem;
+  margin-bottom: 6px;
+  color: #333;
+}
+
+.forecast-row {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+}
+
+.forecast-row::-webkit-scrollbar {
+  height: 6px;
+}
+
+.forecast-row::-webkit-scrollbar-thumb {
+  background: #86b7e6;
+  border-radius: 10px;
+}
+
+.forecast-item {
+  min-width: 60px;
+  background: rgba(255, 255, 255, 0.55);
+  padding: 6px;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.forecast-item img {
+  width: 40px;
+  height: 40px;
+}
+
+.forecast-item p {
+  margin: 2px 0;
+  font-size: 0.8rem;
+  color: #333;
 }
