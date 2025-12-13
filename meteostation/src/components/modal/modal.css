@@ -11,11 +11,22 @@ align-items: center;
 z-index: 1000;
 }
 .modal-content {
-background: white;
-padding: 20px;
-border-radius: 8px;
-min-width: 300px;
-position: relative;
+  background: white;
+  padding: 30px; 
+  border-radius: 12px;
+  min-width: 350px; 
+  max-width: 400px; 
+  position: relative;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+  max-height: 80vh; 
+  overflow-y: auto; 
+}
+
+@media (max-width: 480px) {
+  .modal-content {
+    min-width: 280px;
+    padding: 20px;
+  }
 }
 .modal-close {
 position: absolute;

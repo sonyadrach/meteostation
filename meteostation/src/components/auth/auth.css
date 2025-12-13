@@ -1,7 +1,7 @@
 .auth-container {
 display: flex;
 flex-direction: column;
-gap: 10px;
+gap: 15px;
 }
 .auth-form {
 display: flex;
@@ -17,7 +17,7 @@ border-radius: 4px;
 padding: 8px;
 border: none;
 border-radius: 4px;
-background: #4CAF50;
+background: #0078d7;
 color: white;
 cursor: pointer;
 }

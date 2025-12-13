@@ -1,5 +1,41 @@
 .app-container {
-font-family: Arial, sans-serif;
-min-height: 100vh;
-background: #f9f9f9;
+  font-family: Arial, sans-serif;
+  min-height: 100vh;
+  background: url("./background.webp") no-repeat center center fixed;  background-size: cover;
+  position: relative;
+}
+
+/* Темний оверлей для покращення читабельності тексту */
+.app-container::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: 0;
+}
+
+/* Для темних тем */
+body.theme-dark .app-container::before {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+/* Для синьої теми */
+body.theme-blue .app-container::before {
+  background: rgba(31, 63, 144, 0.4);
+}
+
+/* Вміст повинен бути над оверлеєм */
+.app-container > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Адаптивність */
+@media (max-width: 768px) {
+  .app-container {
+    background-attachment: scroll;
+  }
 }

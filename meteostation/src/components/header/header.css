@@ -1,41 +1,160 @@
 .header {
-justify-content: space-between;
-align-items: center;
-padding: 10px 20px;
-background: #f0f0f0;
-border-bottom: 1px solid #ccc;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background: #f0f0f0;
+  border-bottom: 1px solid #ccc;
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s;
 }
+
+body.theme-default .header {
+  background: #f0f0f0;
+  border-bottom-color: #ccc;
+}
+
+body.theme-dark .header {
+  background: #2d3748;
+  border-bottom-color: #4a5568;
+}
+
+body.theme-blue .header {
+  background: #1f3f90;
+  border-bottom-color: #2a52be;
+}
+
 .header-left {
-font-weight: bold;
-font-size: 20px;
+  font-weight: bold;
+  font-size: 20px;
+  color: #333;
+  transition: color 0.3s;
 }
+
+body.theme-default .header-left {
+  color: #333;
+}
+
+body.theme-dark .header-left {
+  color: #e2e8f0;
+}
+
+body.theme-blue .header-left {
+  color: #ffffff;
+}
+
 .header-right {
-display: flex;
-align-items: center;
-gap: 10px;
-position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: relative;
 }
+
 .login-btn {
-padding: 6px 12px;
-cursor: pointer;
+  padding: 6px 12px;
+  cursor: pointer;
+  background: #0078d7;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-weight: 500;
+  transition: all 0.3s;
 }
+
+.login-btn:hover {
+  background: #5a6fd8;
+  transform: translateY(-1px);
+}
+
+body.theme-dark .login-btn {
+  background: #4a5568;
+}
+
+body.theme-dark .login-btn:hover {
+  background: #5a6fd8;
+}
+
+body.theme-blue .login-btn {
+  background: #2a52be;
+}
+
+body.theme-blue .login-btn:hover {
+  background: #3b82f6;
+}
+
 .lang-switcher {
-position: relative;
-cursor: pointer;
+  position: relative;
+  cursor: pointer;
 }
+
+.globe {
+  font-size: 20px;
+  display: inline-block;
+  padding: 4px;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+}
+
+.globe:hover {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+body.theme-dark .globe:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
 .lang-options {
-position: absolute;
-top: 20px;
-right: 0;
-background: white;
-border: 1px solid #ccc;
-border-radius: 4px;
-overflow: hidden;
+  position: absolute;
+  top: 30px;
+  right: 0;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
 }
+
+body.theme-dark .lang-options {
+  background: #2d3748;
+  border-color: #4a5568;
+  color: #e2e8f0;
+}
+
+body.theme-blue .lang-options {
+  background: #2a52be;
+  border-color: #3b82f6;
+  color: #ffffff;
+}
+
 .lang-options div {
-padding: 5px 10px;
-cursor: pointer;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  min-width: 60px;
 }
+
 .lang-options div:hover {
-background: #eee;
+  background: #eee;
+}
+
+body.theme-dark .lang-options div:hover {
+  background: #4a5568;
+}
+
+body.theme-blue .lang-options div:hover {
+  background: #3b82f6;
+}
+
+.lang-options div.active {
+  background: #667eea;
+  color: white;
+  font-weight: bold;
+}
+
+body.theme-dark .lang-options div.active {
+  background: #5a6fd8;
+}
+
+body.theme-blue .lang-options div.active {
+  background: #3b82f6;
 }
