@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { translations } from "../../i18n/translations";
 import "./weather.css";
+import { addWeatherHistory, updateUserCity } from "../../api/backend";
+
 
 const MIN_LOADING_TIME = 300;
 
@@ -18,9 +20,7 @@ export default function WeatherWidget({ language, user, onCitySave, onWeatherUpd
     const [loadedCity, setLoadedCity] = useState(initialCity);
 
     const t = translations[language];
-    const apiKey = window.env.apiKey;
-
-    // ========================= LOAD WEATHER + FORECAST =========================
+    const apiKey =  '358ea41c4cffdd8bec2cca36703a4b64';
 
     const loadWeather = useCallback(async (targetCity) => {
         if (!targetCity) {
@@ -55,7 +55,6 @@ export default function WeatherWidget({ language, user, onCitySave, onWeatherUpd
 
             if (dataWeather.cod === 200 && dataForecast.cod === "200") {
 
-                // -------- CURRENT WEATHER --------
                 const w = {
                     temp: dataWeather.main.temp,
                     feelsLike: dataWeather.main.feels_like,
@@ -66,10 +65,9 @@ export default function WeatherWidget({ language, user, onCitySave, onWeatherUpd
                 };
                 setWeather(w);
 
-                // -------- SAVE WEATHER HISTORY --------
                 try {
                     if (user?.id) {
-                        await window.api.addWeatherHistory({
+                        await addWeatherHistory({
                             userId: user.id,
                             city: targetCity,
                             weatherData: w
@@ -79,7 +77,6 @@ export default function WeatherWidget({ language, user, onCitySave, onWeatherUpd
                     console.error("Помилка збереження історії:", historyError);
                 }
 
-                // -------- HOURLY FORECAST --------
                 const hours = dataForecast.list.slice(0, 6).map(item => ({
                     time: item.dt_txt,
                     temp: item.main.temp,
@@ -87,7 +84,6 @@ export default function WeatherWidget({ language, user, onCitySave, onWeatherUpd
                 }));
                 setForecastHours(hours);
 
-                // -------- DAILY FORECAST --------
                 const daysMap = {};
                 dataForecast.list.forEach(item => {
                     const date = item.dt_txt.split(" ")[0];
@@ -129,15 +125,11 @@ export default function WeatherWidget({ language, user, onCitySave, onWeatherUpd
         user
     ]);
 
-    // ========================= AUTO-LOAD SAVED CITY ============================
-
     useEffect(() => {
         if (initialCity && loadedCity !== initialCity) {
             loadWeather(initialCity);
         }
     }, [initialCity, loadedCity, loadWeather]);
-
-    // ========================= SAVE CITY ============================
 
     const saveCity = async () => {
         if (!cityInput.trim()) return;
@@ -150,7 +142,7 @@ export default function WeatherWidget({ language, user, onCitySave, onWeatherUpd
         }
 
         try {
-            const res = await window.api.updateUserCity({
+            const res = await updateUserCity({
                 userId: user.id,
                 city: cleanCity
             });
@@ -166,8 +158,6 @@ export default function WeatherWidget({ language, user, onCitySave, onWeatherUpd
             setMessage(t.saveError);
         }
     };
-
-    // ========================= RENDER CURRENT ============================
 
     const renderCurrent = () => {
         if (isLoading)
@@ -194,8 +184,6 @@ export default function WeatherWidget({ language, user, onCitySave, onWeatherUpd
         );
     };
 
-    // ========================= UI ============================
-
     return (
         <div className="weather-widget">
 
@@ -215,7 +203,6 @@ export default function WeatherWidget({ language, user, onCitySave, onWeatherUpd
                 {renderCurrent()}
             </div>
 
-            {/* HOURLY FORECAST */}
             {forecastHours.length > 0 && (
                 <div className="forecast-hours">
                     <h4>{t.hourlyForecast}</h4>
@@ -231,7 +218,6 @@ export default function WeatherWidget({ language, user, onCitySave, onWeatherUpd
                 </div>
             )}
 
-            {/* DAILY FORECAST */}
             {forecastDays.length > 0 && (
                 <div className="forecast-days">
                     <h4>{t.dailyForecast}</h4>

@@ -3,7 +3,8 @@ import type { CapacitorConfig } from '@capacitor/cli';
 const config: CapacitorConfig = {
   appId: 'com.sonyadrach.weatherapp',
   appName: 'meteostation',
-  webDir: 'build'
+  webDir: 'build',
+  server: undefined
 };
 
 export default config;

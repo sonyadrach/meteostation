@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { translations } from "../../i18n/translations";
 import "./auth.css";
+import { loginUser, registerUser } from "../../api/backend";
 
 export default function Auth({ language }) {
   const navigate = useNavigate();
@@ -21,65 +22,42 @@ export default function Auth({ language }) {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    try {
-      if (isLogin) {
-        // === LOGIN ===
-        const res = await window.api.loginUser({
-          email: form.email,
-          password: form.password,
-        });
+  try {
+    if (isLogin) {
+      const res = await loginUser({
+        email: form.email,
+        password: form.password,
+      });
 
-        if (res.success) {
-          localStorage.setItem("user", JSON.stringify(res.user));
-
-          // ПРАВИЛЬНЕ перенаправлення в Electron
-          navigate("/home");
-
-        } else {
-          setMessage(
-            (language === "ua" ? "Помилка: " : "Error: ") + res.message
-          );
-        }
+      if (res.success) {
+        localStorage.setItem("user", JSON.stringify(res.user));
+        navigate("/home");
       } else {
-        // === REGISTER ===
-        if (form.password !== form.confirmPassword) {
-          setMessage(
-            language === "ua"
-              ? "Паролі не співпадають!"
-              : "Passwords do not match!"
-          );
-          return;
-        }
-
-        const res = await window.api.registerUser({
-          username: form.username,
-          email: form.email,
-          password: form.password,
-        });
-
-        if (res.success) {
-          const newUser = {
-            id: res.id,
-            username: form.username,
-            email: form.email,
-            city: "",
-          };
-
-          localStorage.setItem("user", JSON.stringify(newUser));
-
-          // ПРАВИЛЬНЕ перенаправлення
-          navigate("/home");
-
-        } else {
-          setMessage(
-            (language === "ua" ? "Помилка: " : "Error: ") + res.message
-          );
-        }
+        setMessage(res.message);
       }
-    } catch (err) {
-      console.error(err);
+
+    } else {
+      if (form.password !== form.confirmPassword) {
+        setMessage("Паролі не співпадають");
+        return;
+      }
+
+      const res = await registerUser({
+        username: form.username,
+        email: form.email,
+        password: form.password,
+      });
+
+      if (res.success) {
+        localStorage.setItem("user", JSON.stringify(res.user));
+        navigate("/home");
+      } else {
+        setMessage(res.message);
+      }
+    }
+  } catch (e) {
       setMessage(
         language === "ua"
           ? "Помилка з'єднання з базою даних."

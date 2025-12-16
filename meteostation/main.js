@@ -80,7 +80,6 @@ ipcMain.handle('update-user-settings', async (event, { userId, theme, language }
     });
   });
 });
-// Додати в main.js після існуючих обробників:
 
 // === Нагадування ===
 ipcMain.handle('add-reminder', async (event, data) => {
